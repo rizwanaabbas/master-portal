@@ -1284,14 +1284,19 @@ class Common
     public static function getIndividualOnboardingPDFs($client, $configFiles = null)
     {
         $pdfs = [];
+        $pdfOptionsService = app(\App\Services\OnboardingPdfOptionsService::class);
+        $pdfOptions = $pdfOptionsService->resolve(self::getOwnCompanyData());
 
         foreach ($configFiles as $file) {
+            if (!$pdfOptionsService->shouldGenerate($pdfOptions, $file->identifier, 'individual')) {
+                continue;
+            }
 
             switch ($file->identifier) {
                 case 'application_form':
                     // generate individual onboarding pdf
                     $individual = $client->individual;
-                    $view = view("pdfs.on-boarding.individual", compact('individual', 'client'));
+                    $view = view("pdfs.on-boarding.individual", compact('individual', 'client', 'pdfOptions'));
                     $pdfFile = PDF::loadHTML($view)->setPaper('a4');
 
                     $pdfFile->save(storage_path('app/onBoardingPdfs/' . $client->id . '/' . $file->id . '.pdf'));
@@ -1300,7 +1305,7 @@ class Common
                     break;
                 case 'letter_of_indemnity':
                     // generate letter of indemnity
-                    $view = view("pdfs.on-boarding.letter-of-indemnity", compact('client'));
+                    $view = view("pdfs.on-boarding.letter-of-indemnity", compact('client', 'pdfOptions'));
                     $pdfFile = PDF::loadHTML($view)->setPaper('a4');
 
                     $pdfFile->save(storage_path('app/onBoardingPdfs/' . $client->id . '/' . $file->id . '.pdf'));
@@ -1319,13 +1324,18 @@ class Common
     public static function getCompanyOnboardingPDFs($client, $configFiles = null)
     {
         $pdfs = [];
+        $pdfOptionsService = app(\App\Services\OnboardingPdfOptionsService::class);
+        $pdfOptions = $pdfOptionsService->resolve(self::getOwnCompanyData());
 
         foreach ($configFiles as $file) {
+            if (!$pdfOptionsService->shouldGenerate($pdfOptions, $file->identifier, 'company')) {
+                continue;
+            }
 
             switch ($file->identifier) {
                 case 'application_form':
                     // generate company onboarding pdf
-                    $view = view("pdfs.on-boarding.company", compact('client'));
+                    $view = view("pdfs.on-boarding.company", compact('client', 'pdfOptions'));
                     $pdfFile = PDF::loadHTML($view)->setPaper('a4');
 
                     $pdfFile->save(storage_path('app/onBoardingPdfs/' . $client->id . '/' . $file->id . '.pdf'));
@@ -1334,7 +1344,7 @@ class Common
                     break;
                 case 'letter_of_indemnity':
                     // generate letter of indemnity
-                    $view = view("pdfs.on-boarding.letter-of-indemnity", compact('client'));
+                    $view = view("pdfs.on-boarding.letter-of-indemnity", compact('client', 'pdfOptions'));
                     $pdfFile = PDF::loadHTML($view)->setPaper('a4');
 
                     $pdfFile->save(storage_path('app/onBoardingPdfs/' . $client->id . '/' . $file->id . '.pdf'));
@@ -1343,7 +1353,7 @@ class Common
                     break;
                 case 'board_of_resolution':
                     // generate board resolution pdf
-                    $view = view("pdfs.on-boarding.board-resolution", compact('client'));
+                    $view = view("pdfs.on-boarding.board-resolution", compact('client', 'pdfOptions'));
                     $pdfFile = PDF::loadHTML($view)->setPaper('a4');
 
                     $pdfFile->save(storage_path('app/onBoardingPdfs/' . $client->id . '/' . $file->id . '.pdf'));

@@ -122,8 +122,9 @@
                             <div class="form-group">
                                 <label class="form-label" for="theme">Theme</label>
                                 <input type="text" id="theme" name="theme" value=""
-                                    class="form-control">
-                                <small>Enter the theme Name e.g. cust-theme-14.css</small>
+                                    class="form-control" placeholder="cust-theme-14.css">
+                                <small>Stock e.g. <code>cust-theme-14.css</code>. After create, use
+                                    <strong>Create / Edit theme</strong> for a bank-specific custom CSS.</small>
                                 @error('theme')
                                     <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                 @enderror

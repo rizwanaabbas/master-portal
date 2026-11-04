@@ -8,5 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class OwnCompany extends Model
 {
     use HasFactory;
-    protected $table = "own_companies";
+
+    protected $table = 'own_companies';
+
+    protected $casts = [
+        'onboarding_pdf_options' => 'array',
+    ];
 }

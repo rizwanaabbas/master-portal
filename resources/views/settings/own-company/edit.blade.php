@@ -138,9 +138,17 @@
                             </div>
                             <div class="form-group">
                                 <label class="form-label" for="theme">Theme</label>
-                                <input type="text" id="theme" name="theme" value="{{ $company->theme }}"
-                                    class="form-control">
-                                <small>Enter the theme Name e.g. cust-theme-14.css</small>
+                                <div class="input-group">
+                                    <input type="text" id="theme" name="theme" value="{{ $company->theme }}"
+                                        class="form-control">
+                                    <div class="input-group-append">
+                                        <a href="{{ url('/settings/own-company/theme') }}" class="btn btn-outline-primary">
+                                            <i class="fal fa-palette"></i> Create / Edit
+                                        </a>
+                                    </div>
+                                </div>
+                                <small>Stock e.g. <code>cust-theme-14.css</code>, or custom
+                                    <code>custom/&lt;timestamp&gt;-bank.css</code> (not in git / deploys).</small>
                                 @error('theme')
                                     <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                                 @enderror

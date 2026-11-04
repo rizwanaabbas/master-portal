@@ -631,6 +631,15 @@ Route::group(['middleware' => ['auth', '2fa']], function () {
         Route::get('/settings/own-company/edit/{id}', [\App\Http\Controllers\OwnCompanyController::class, 'edit']);
         Route::post('/settings/own-company/update', [\App\Http\Controllers\OwnCompanyController::class, 'update']);
         Route::post('/settings/own-company/store', [\App\Http\Controllers\OwnCompanyController::class, 'store']);
+        Route::get('/settings/own-company/theme', [\App\Http\Controllers\OwnCompanyThemeController::class, 'edit']);
+        Route::get('/settings/own-company/theme/palette', [\App\Http\Controllers\OwnCompanyThemeController::class, 'previewPalette']);
+        Route::post('/settings/own-company/theme', [\App\Http\Controllers\OwnCompanyThemeController::class, 'store']);
+        Route::post('/settings/own-company/theme/reset', [\App\Http\Controllers\OwnCompanyThemeController::class, 'reset']);
+        Route::get('/settings/own-company/onboarding-pdf', [\App\Http\Controllers\OwnCompanyOnboardingPdfController::class, 'edit']);
+        Route::post('/settings/own-company/onboarding-pdf', [\App\Http\Controllers\OwnCompanyOnboardingPdfController::class, 'store']);
+        Route::post('/settings/own-company/onboarding-pdf/preset', [\App\Http\Controllers\OwnCompanyOnboardingPdfController::class, 'applyPreset']);
+        Route::match(['get', 'post'], '/settings/own-company/onboarding-pdf/preview', [\App\Http\Controllers\OwnCompanyOnboardingPdfController::class, 'preview']);
+        Route::post('/settings/own-company/onboarding-pdf/live-preview', [\App\Http\Controllers\OwnCompanyOnboardingPdfController::class, 'livePreview']);
 
         Route::get('/settings/general-configurations/dropdown-configurations', [\App\Http\Controllers\GeneralConfigurationController::class, 'getDropdownsConfigurations']);
         Route::post('/settings/general-configurations/dropdown-configurations/store', [\App\Http\Controllers\GeneralConfigurationController::class, 'storeDropDownConfiguration']);

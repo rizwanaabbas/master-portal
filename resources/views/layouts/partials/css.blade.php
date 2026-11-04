@@ -2,8 +2,6 @@
 <link id="appbundle" rel="stylesheet" media="screen, print" href="{{ asset('assets/css/app.bundle.css') }}">
 {{-- <link id="mytheme" rel="stylesheet" media="screen, print" href="#"> --}}
 <link id="myskin" rel="stylesheet" media="screen, print" href="{{ asset('assets/css/skins/skin-master.css') }}">
-<link id="myskin" rel="stylesheet" media="screen, print"
-    href="{{ asset('assets/css/themes/' . ($ownCompany->theme ?? 'cust-theme-14.css')) }}">
 <!-- Place favicon.ico in the root directory -->
 <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('assets/img/favicon/apple-touch-icon.png') }}">
 <link rel="icon" type="image/png" sizes="32x32"
@@ -26,3 +24,11 @@
 <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
 <link rel="stylesheet" media="screen, print" href="{{ asset('/assets/css/fa-brands.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/jquery.simplegauge.css') }}">
+{{-- Own Company theme LAST so palette + badge overrides beat vendors.bundle (_badge.scss). --}}
+@php
+    $themeFile = $ownCompany->theme ?? 'cust-theme-14.css';
+    $themePath = public_path('assets/css/themes/' . $themeFile);
+    $themeVer = is_file($themePath) ? filemtime($themePath) : time();
+@endphp
+<link id="own-company-theme" rel="stylesheet" media="screen, print"
+    href="{{ asset('assets/css/themes/' . $themeFile) }}?v={{ $themeVer }}">

@@ -63,3 +63,6 @@ config.bat
 # Local env dumps
 cib_env.zip
 *.env.zip
+
+# Bank-specific Own Company themes (visual editor; not deployed from git)
+/public/assets/css/themes/custom/

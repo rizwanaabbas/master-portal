@@ -7,8 +7,23 @@
         <h1 class="subheader-title">
             <span class='fw-300'>Own Company</span>
         </h1>
-        <a href="{{ url('/settings/own-company/edit/' . $company->id) }}" class="btn btn-primary mr-3"><i
-                class="fal fa-edit"></i> Edit </a>
+        <a href="{{ url('/settings/own-company/edit/' . $company->id) }}" class="btn btn-primary mr-2">
+            <i class="fal fa-edit"></i> Edit
+        </a>
+        <a href="{{ url('/settings/own-company/theme') }}" class="btn btn-outline-primary mr-2">
+            <i class="fal fa-palette"></i> Edit CSS
+        </a>
+        <a href="{{ url('/settings/own-company/onboarding-pdf') }}" class="btn btn-outline-primary mr-2">
+            <i class="fal fa-file-pdf"></i> Onboarding PDF
+        </a>
+        <form method="post" action="{{ url('/settings/own-company/theme/reset') }}" class="d-inline mr-3"
+            onsubmit="return confirm('Reset theme to stock CSS cust-theme-14.css? You can reconfigure colors afterward.');">
+            @csrf
+            <input type="hidden" name="stock_theme" value="cust-theme-14.css">
+            <button type="submit" class="btn btn-outline-danger">
+                <i class="fal fa-undo"></i> Reset CSS
+            </button>
+        </form>
     </div>
 
     <div class="panel" data-panel-lock="false" data-panel-close="false" data-panel-collapsed="false" data-panel-color="false"
@@ -155,7 +170,28 @@
                         </tr>
                         <tr>
                             <th>Theme</th>
-                            <td>{{ $ownCompany ? $ownCompany->theme : 'Default' }}</td>
+                            <td>
+                                {{ $company->theme ?: 'Default' }}
+                                <a href="{{ url('/settings/own-company/theme') }}" class="btn btn-sm btn-outline-primary ml-2">
+                                    <i class="fal fa-palette"></i> Create / Edit theme
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Onboarding PDF</th>
+                            <td>
+                                @php
+                                    $pdfPreset = $company->onboarding_pdf_options['preset'] ?? 'cib';
+                                    $pdfPresetLabel = \App\Services\OnboardingPdfOptionsService::PRESET_LABELS[$pdfPreset]
+                                        ?? \App\Services\OnboardingPdfOptionsService::PRESET_LABELS['cib']
+                                        ?? ucfirst($pdfPreset);
+                                @endphp
+                                Bank preset: <strong>{{ $pdfPresetLabel }}</strong>
+                                <a href="{{ url('/settings/own-company/onboarding-pdf') }}"
+                                    class="btn btn-sm btn-outline-primary ml-2">
+                                    <i class="fal fa-file-pdf"></i> Configure layout
+                                </a>
+                            </td>
                         </tr>
                         <tr>
                             <th>Card Colors</th>

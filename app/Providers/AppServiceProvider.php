@@ -125,6 +125,13 @@ class AppServiceProvider extends ServiceProvider
 
             $enabledModules = \App\Helpers\Common::getEnabledModules();
             view()->share('enabledModules', $enabledModules);
+
+            try {
+                $pdfOptions = app(\App\Services\OnboardingPdfOptionsService::class)->resolve($ownCompany);
+            } catch (\Throwable $e) {
+                $pdfOptions = app(\App\Services\OnboardingPdfOptionsService::class)->defaults('standard');
+            }
+            view()->share('pdfOptions', $pdfOptions);
         }
     }
 

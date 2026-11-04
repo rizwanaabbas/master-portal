@@ -20,7 +20,8 @@ Helper: `App\Helpers\Common::getOwnCompanyData()` (shared to all Blade views as 
 | `client_portal_light_logo`, `client_portal_dark_logo` | Client portal (separate app) light/dark themes |
 | `stamp`, `watermark` | Balance certificates & statement PDFs |
 | `login_page_image` | Auth/login page background (falls back to default art if empty) |
-| `theme` | CSS file under `public/assets/css/themes/` (e.g. `cust-theme-14.css`) |
+| `theme` | CSS file under `public/assets/css/themes/` (stock e.g. `cust-theme-14.css`, or bank custom `custom/<timestamp>-name.css` via **Settings → Own Company → Create / Edit theme**) |
+| `onboarding_pdf_options` | JSON layout flags for onboarding PDFs (presets / Race / Maker-Checker / account-type lists) via **Settings → Own Company → Onboarding PDF** — do **not** fork blades per bank |
 | `card_colors` | JSON array of Bootstrap utility classes for dashboard cards |
 | `chart_color` | Hex color for dashboard charts |
 | `poc_name`, `poc_email`, `support_team_emails`, `tech_email`, `chairperson_email` | Emails & support copy |
