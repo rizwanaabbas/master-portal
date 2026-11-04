@@ -52,8 +52,6 @@ temp_interactive_push.bat
 config.bat
 
 # Never commit env / bank secrets (brought from cib-portal)
-.env
-.env.*
 !.env.example
 
 # Bank-specific Firebase service accounts (path set per deploy)

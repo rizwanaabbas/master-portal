@@ -125,15 +125,15 @@
                             <div class="form-group">
                                 <label for="form-label" for="login_page_image">Login Page Image</label><br />
                                 @if ($company->login_page_image != '')
-                                    <img src="{{ $ownCompany ? $ownCompany->login_page_image : '' }}"
+                                    <img src="{{ $company->login_page_image }}"
                                         style="width: 35px; height:35px"
                                         class="mr-2 border border-primary profile-image rounded-circle"
                                         alt="Login Page Image" />
                                 @endif
                                 <label for="login_page_image" class="btn btn-light">Upload Login Page Image</label>
-                                <span id="file-name-display-login_page_image"> choose gif, recommended size
+                                <span id="file-name-display-login_page_image"> choose jpg/png/gif/webp/svg, recommended size
                                     527x684</span>
-                                <input type="file" name="login_page_image" accept="image/*" onchange="setFile(this)"
+                                <input type="file" name="login_page_image" accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml,.jpg,.jpeg,.png,.gif,.webp,.svg" onchange="setFile(this)"
                                     id="login_page_image" class="invisible item-file d-none" />
                             </div>
                             <div class="form-group">

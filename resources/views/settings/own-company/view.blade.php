@@ -150,7 +150,7 @@
                         </tr>
                         <tr>
                             <th valign="middle">Login Page Image</th>
-                            <td><img src="{{ $ownCompany ? $ownCompany->login_page_image : '' }}"
+                            <td><img src="{{ $company->login_page_image }}"
                                     alt="{{ $company->name }}" height="100px"></td>
                         </tr>
                         <tr>

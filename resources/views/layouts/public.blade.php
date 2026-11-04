@@ -63,14 +63,15 @@
                 </div>
                 @php
                     // Prefer Own Company login image when set; otherwise shared default art.
+                    // Match cib-portal pattern styling: cover + center bottom (wave SVGs sit on the bottom edge).
                     $loginBg = ($ownCompany && !empty($ownCompany->login_page_image))
                         ? $ownCompany->login_page_image
                         : asset('assets/img/svg/blue_dots.png');
                     $loginBgSize = ($ownCompany && !empty($ownCompany->login_page_image)) ? 'cover' : 'auto';
-                    $loginBgPos = ($ownCompany && !empty($ownCompany->login_page_image)) ? 'center center' : 'left bottom';
+                    $loginBgPos = ($ownCompany && !empty($ownCompany->login_page_image)) ? 'center bottom' : 'left bottom';
                 @endphp
                 <div class="flex-1"
-                    style="background: url({{ $loginBg }}) no-repeat {{ $loginBgPos }} fixed; background-size: {{ $loginBgSize }};">
+                    style="background: url('{{ $loginBg }}') no-repeat {{ $loginBgPos }} fixed; background-size: {{ $loginBgSize }};">
                     <div class="container py-4 py-lg-5 my-lg-5 px-4 px-sm-0">
                         <div class="row">
 
