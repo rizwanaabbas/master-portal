@@ -1,0 +1,261 @@
+.rejected_tooltip {
+    color: #fd3995;
+    font-weight: bold;
+}
+
+.info_tooltip {
+    color: orange;
+    font-weight: bold;
+}
+
+.vista-card {
+    background: url("/assets/img/card_380.png");
+    background-repeat: round;
+}
+
+.detailed-member-card {
+    border-radius: 15px !important;
+}
+
+.vista-card-title {
+    background-color: rgba(60, 60, 60, 0.5);
+    width: fit-content;
+    border-radius: 7px;
+}
+
+.btn-card-details {
+    width: max-content;
+    min-width: 150px;
+}
+
+.corsur-pointer {
+    cursor: pointer;
+}
+
+.font-weight-900 {
+    font-weight: 900;
+}
+#g-recaptcha-response {
+    display: block !important;
+    position: absolute;
+    margin: -78px 0 0 0 !important;
+    width: 302px !important;
+    height: 76px !important;
+    z-index: -999999;
+    opacity: 0;
+}
+
+@media (max-width: 767px) {
+    .g-recaptcha {
+        transform: scale(0.77);
+        transform-origin: 0 0;
+    }
+}
+
+@media (max-width: 400px) {
+    .g-recaptcha {
+        width: 200px !important;
+        height: auto !important;
+        transform: scale(0.7);
+        transform-origin: 0 0;
+    }
+
+    .g-recaptcha > div {
+        width: 198px !important;
+        height: auto !important;
+    }
+
+    /* .g-recaptcha > div > div > iframe {
+        width: -webkit-fill-available;
+        height: auto !important;
+    } */
+}
+
+@media (max-width: 767px) {
+    .tab-content-client {
+        margin-top: 50px;
+    }
+}
+
+@media (max-width: 475px) {
+    .tab-content-client {
+        margin-top: 100px;
+    }
+}
+@media (max-width: 320px) {
+    .tab-content-client {
+        margin-top: 150px;
+    }
+}
+
+@media (max-width: 576px) {
+    .subheader .btn-shape {
+        padding: 0.25rem 0.5rem;
+    }
+    .subheader .btn-shape i,
+    .subheader .btn-shape span {
+        display: block;
+        margin: 0 auto 0.5rem;
+        text-align: center;
+    }
+
+    .dataTables_length {
+        margin-top: 10px;
+    }
+}
+
+@media (max-width: 407px) {
+    .crypto-deposit-button {
+        margin-top: 10px;
+    }
+}
+
+#service_currency_list {
+    display: none;
+}
+
+#service_account_list {
+    display: none;
+}
+
+#field-button {
+    display: none;
+}
+
+#module-config-submit {
+    display: none;
+}
+
+#module-config-cancle {
+    display: none;
+}
+
+#from_date_error {
+    display: none;
+}
+.crypto_price_quote {
+    font-size: 18px;
+    text-align: center;
+}
+.crypto_order_details_pop {
+    font-size: 12px;
+}
+.crypto-summary .alert {
+    margin-bottom: 1rem;
+}
+.crypto-address-data-container {
+    margin-top: 40px;
+}
+.form-group.crypto-summary {
+    margin-top: 10px;
+}
+.crypto-balance-logo {
+    width: 35px;
+}
+
+#orderDetails {
+    margin-top: 2rem;
+}
+#orderDetails .row {
+    margin-bottom: 1.5rem;
+}
+#orderDetails .col-md-6 .row {
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #ccc;
+    min-height: 41px;
+}
+/* .order-detail .col-md-6 {
+    padding: 0 1rem;
+} */
+#orderDetails strong {
+    font-weight: bold;
+}
+.sanction-chat-bubble {
+    background-color: #f4ead3;
+    border-radius: 15px;
+    padding: 15px;
+    margin-bottom: 15px;
+    position: relative;
+    text-align: left;
+}
+.sanction-chat-bubble:after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 20px;
+    width: 0;
+    height: 0;
+    border: 10px solid transparent;
+    border-top-color: #f4ead3;
+    border-bottom: 0;
+    border-left: 0;
+    margin-left: -5px;
+    margin-bottom: -10px;
+}
+.sanction-chat-bubble strong {
+    font-weight: bold;
+}
+.currency-exchange-icon i {
+    margin-top: 35px;
+    font-size: 16px;
+    font-weight: bold;
+}
+.lseg-color {
+    color: #001eff;
+}
+
+/*
+ *Tooltip for changes CSS starts
+ */
+.field-container {
+    position: relative;
+}
+
+/* Style the red circle */
+.tooltip-container {
+    position: absolute;
+    top: 25%;  /* Adjust to position the circle slightly within the input field */
+    left: 2px; /* Adjust to position the circle near the top-right corner */
+}
+
+/* The circle itself */
+.tooltip-circle {
+    width: 10px;
+    height: 10px;
+    background-color: #f53f23;
+    border-radius: 50%;
+    position: relative;
+    cursor: pointer;
+}
+
+/* Tooltip styles (hidden by default) */
+.tooltip-circle::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    right: 50%;
+    transform: translateX(100%);
+    padding: 5px;
+    background-color: #333;
+    color: #fff;
+    border-radius: 4px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+    white-space: nowrap;
+    font-size: 12px;
+}
+
+/* Tooltip visibility on hover */
+.tooltip-circle:hover::after {
+    opacity: 1;
+    visibility: visible;
+}
+/* Tooltip for changes CSS ends */
+.badge-prohibited{
+    color: #fff;
+    background-color: #A52A2A;
+}
+.medium-text {
+    font-size: 18px;
+}

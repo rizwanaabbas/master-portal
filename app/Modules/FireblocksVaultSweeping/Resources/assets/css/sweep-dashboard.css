@@ -1,0 +1,155 @@
+/* Vault Sweeping dashboard */
+
+.sweep-dash-intro {
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 55%, #1d4ed8 100%);
+    border-radius: 14px;
+    padding: 1.35rem 1.5rem;
+    color: #fff;
+    margin-bottom: 1.25rem;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, .12);
+}
+
+.sweep-dash-intro h2 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: .35rem;
+}
+
+.sweep-dash-intro p {
+    margin-bottom: 0;
+    opacity: .88;
+    font-size: .92rem;
+}
+
+.sweep-dash-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    padding: .35rem .7rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .12);
+    font-size: .78rem;
+    margin-right: .5rem;
+    margin-top: .65rem;
+}
+
+.sweep-dash-pill.is-warn {
+    background: rgba(251, 191, 36, .22);
+    color: #fde68a;
+}
+
+.sweep-dash-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: .85rem;
+    margin-bottom: 1rem;
+}
+
+.sweep-dash-metric {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1rem 1.05rem;
+    min-height: 100%;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, .04);
+}
+
+.sweep-dash-metric-label {
+    font-size: .72rem;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: #64748b;
+    margin-bottom: .35rem;
+    font-weight: 600;
+}
+
+.sweep-dash-metric-value {
+    font-size: 1.75rem;
+    line-height: 1.1;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.sweep-dash-metric-sub {
+    font-size: .78rem;
+    color: #94a3b8;
+    margin-top: .25rem;
+}
+
+.sweep-dash-status-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: .75rem;
+    margin-bottom: 1.25rem;
+}
+
+.sweep-dash-status-card {
+    position: relative;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: .95rem 1rem .95rem 3.25rem;
+    background: #fff;
+    cursor: pointer;
+    transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+    overflow: hidden;
+}
+
+.sweep-dash-status-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(15, 23, 42, .08);
+}
+
+.sweep-dash-status-card.is-active {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, .12);
+}
+
+.sweep-dash-status-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: var(--sweep-accent, #94a3b8);
+}
+
+.sweep-dash-status-icon {
+    position: absolute;
+    left: .85rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 2rem;
+    height: 2rem;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--sweep-accent-soft, #f1f5f9);
+    color: var(--sweep-accent, #64748b);
+    font-size: .95rem;
+}
+
+.sweep-dash-status-label {
+    font-size: .78rem;
+    color: #64748b;
+    font-weight: 600;
+    margin-bottom: .15rem;
+}
+
+.sweep-dash-status-value {
+    font-size: 1.45rem;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.1;
+}
+
+.sweep-dash-filter-hint {
+    font-size: .82rem;
+    color: #64748b;
+    margin-bottom: .75rem;
+}
+
+.sweep-dash-filter-hint strong {
+    color: #2563eb;
+}

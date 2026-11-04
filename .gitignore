@@ -1,0 +1,65 @@
+/node_modules
+/public/hot
+/public/storage
+/public/clients
+/public/profile-photos
+/public/company-logo/
+/storage/*.key
+/storage/debugbar/
+/vendor
+deploy.sh
+migrate_remote.sh
+lms_ctx.sh
+.env.backup
+migrate_remote.sh
+deploy.sh
+deploy_release.log
+composer.lock
+.phpunit.result.cache
+docker-compose.override.yml
+Homestead.json
+Homestead.yaml
+npm-debug.log
+yarn-error.log
+/.idea
+/.cursor
+bootstrap/cache/
+/public/transaction
+/public/tmp
+/tmp
+**/.DS_Store
+/resources/views/pdfs/on-boarding
+Dockerfile_backup
+
+# Ignore database/ip2location
+/database/ip2location/
+/docs.zip
+.claude/settings.json
+
+# GitHub Actions workflows — keep local per environment/remote; do not commit or push
+# .github/workflows/
+.gstack/
+
+# Local codebase-memory MCP index (regenerate with index_repository)
+.codebase-memory/
+
+# Local VS Code / Cursor workspace file
+cib-portal.code-workspace
+portal-master.code-workspace
+branch_structure.json
+temp_auto_push.bat
+temp_interactive_push.bat
+config.bat
+
+# Never commit env / bank secrets (brought from cib-portal)
+.env
+.env.*
+!.env.example
+
+# Bank-specific Firebase service accounts (path set per deploy)
+/storage/*firebase*account*.json
+/storage/firebase-account-file.json
+
+# Local env dumps
+cib_env.zip
+*.env.zip

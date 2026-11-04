@@ -1,0 +1,49 @@
+/* Sweep rules list grid */
+
+#sweep-rules-table th.sortable {
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+}
+
+.sweep-rule-drag-handle {
+    cursor: grab;
+    color: #94a3b8;
+    width: 2rem;
+    text-align: center;
+    display: inline-block;
+}
+
+.sweep-rule-drag-handle:active {
+    cursor: grabbing;
+}
+
+#sweep-rules-table tbody tr.ui-sortable-helper {
+    display: table;
+    background: #fff;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, .12);
+}
+
+#sweep-rules-table tbody tr.ui-sortable-placeholder {
+    visibility: visible !important;
+    background: #eff6ff;
+}
+
+#sweep-rules-table tbody tr.ui-sortable-placeholder td {
+    border-top: 2px dashed #93c5fd;
+    border-bottom: 2px dashed #93c5fd;
+}
+
+#sweep-rules-priority-status {
+    min-height: 1.5rem;
+}
+
+.sweep-rule-detail-btn {
+    min-width: 7rem;
+    font-weight: 600;
+    padding: .45rem 1rem;
+}
+
+.sweep-reorder-hint.is-active {
+    display: block;
+}

@@ -1,0 +1,55 @@
+<?php
+
+namespace App\Mail;
+
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Mail\Mailable;
+use Illuminate\Queue\SerializesModels;
+
+class NotifyManagerNewAccount extends Mailable implements ShouldQueue
+{
+    use Queueable, SerializesModels;
+    public $data;
+    public $sender;
+    public $user;
+    public $ownCompany;
+
+    /**
+     * Create a new message instance.
+     *
+     * @return void
+     */
+    public function __construct($data, $sender, $user, $ownCompany)
+    {
+        $this->data = $data;
+        $this->sender = $sender;
+        $this->user = $user;
+        $this->ownCompany = $ownCompany;
+        $queuePrefix = env('QUEUE_PREFIX');
+
+        $this->onQueue($queuePrefix);
+    }
+
+    /**
+     * Build the message.
+     *
+     * @return $this
+     */
+    public function build()
+    {
+        $address = $this->sender['email'];
+        $subject = $this->sender['subject'];
+        $name = $this->sender['name'];
+
+        return $this->view('emails.system.notify-manager-new-account')
+            ->from($address, $name)
+            ->replyTo($address, $name)
+            ->subject($subject)
+            ->with([
+                'account' => $this->data,
+                'user' => $this->user,
+                'client' => $this->data->client,
+            ]);
+    }
+}

@@ -1,0 +1,268 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      helm_charts_repo:
+        description: 'Name of the helm-charts repository'
+        required: false
+        default: 'helm-charts'
+
+env:
+  HELM_CHARTS_REPO: ${{ github.event.inputs.helm_charts_repo || 'helm-charts' }}
+  # Per-bank helm chart folder. Set GitHub Actions variable ORG_FOLDER (e.g. monfi, cib).
+  # Falls back to repository owner slug when unset.
+  ORG_FOLDER: ${{ vars.ORG_FOLDER }}
+  # Comma-separated list of chart suffixes to update alongside the primary chart.
+  # Leave empty if no companion charts exist. Example: '-job' or '-job,-worker'
+  ADDITIONAL_CHARTS: ${{ vars.ADDITIONAL_CHARTS }}
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+
+      - name: Derive environment variables
+        run: |
+          ORG=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          REPO_NAME=$(echo "${{ github.event.repository.name }}" | tr '[:upper:]' '[:lower:]')
+          ORG_FOLDER="${{ env.ORG_FOLDER }}"
+          if [ -z "$ORG_FOLDER" ]; then
+            ORG_FOLDER="$ORG"
+          fi
+          ADDITIONAL_CHARTS="${{ env.ADDITIONAL_CHARTS }}"
+          if [ -z "$ADDITIONAL_CHARTS" ]; then
+            ADDITIONAL_CHARTS="-job"
+          fi
+          echo "REPO_NAME=${REPO_NAME}" >> $GITHUB_ENV
+          echo "ORG=${ORG}" >> $GITHUB_ENV
+          echo "ORG_FOLDER=${ORG_FOLDER}" >> $GITHUB_ENV
+          echo "ADDITIONAL_CHARTS=${ADDITIONAL_CHARTS}" >> $GITHUB_ENV
+          echo "TAG=${{ github.ref_name }}" >> $GITHUB_ENV
+          echo "CHART_NAME=${ORG_FOLDER}-${REPO_NAME}" >> $GITHUB_ENV
+          echo "CHART_PATH=charts/${ORG_FOLDER}/${REPO_NAME}" >> $GITHUB_ENV
+          echo "MANIFESTS_REPO=k8s-manifests-${ORG_FOLDER}-prd" >> $GITHUB_ENV
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: |
+            linux/amd64
+          push: true
+          tags: |
+            ghcr.io/${{ env.ORG }}/${{ env.REPO_NAME }}:${{ env.TAG }}
+
+      - name: Build and push for Nginx
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile.nginx
+          platforms: |
+            linux/amd64
+          push: true
+          tags: |
+            ghcr.io/${{ env.ORG }}/${{ env.REPO_NAME }}:${{ env.TAG }}-nginx
+
+      - name: Clone helm-charts repository
+        run: |
+          git clone https://${{ secrets.PAT_TOKEN }}@github.com/${{ env.ORG }}/${{ env.HELM_CHARTS_REPO }}.git helm-charts-repo
+          cd helm-charts-repo
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Build chart list
+        run: |
+          # Build the list of all charts to update (primary + additional)
+          CHARTS="${{ env.CHART_PATH }}"
+          CHART_NAMES="${{ env.CHART_NAME }}"
+
+          ADDITIONAL="${{ env.ADDITIONAL_CHARTS }}"
+          if [ -n "$ADDITIONAL" ]; then
+            IFS=',' read -ra SUFFIXES <<< "$ADDITIONAL"
+            for SUFFIX in "${SUFFIXES[@]}"; do
+              SUFFIX=$(echo "$SUFFIX" | xargs)  # trim whitespace
+              CHARTS="${CHARTS},charts/${{ env.ORG_FOLDER }}/${{ env.REPO_NAME }}${SUFFIX}"
+              CHART_NAMES="${CHART_NAMES},${{ env.CHART_NAME }}${SUFFIX}"
+            done
+          fi
+
+          echo "ALL_CHART_PATHS=${CHARTS}" >> $GITHUB_ENV
+          echo "ALL_CHART_NAMES=${CHART_NAMES}" >> $GITHUB_ENV
+
+      - name: Update Helm charts
+        run: |
+          IFS=',' read -ra CHART_PATHS <<< "${{ env.ALL_CHART_PATHS }}"
+          IFS=',' read -ra CHART_NAMES <<< "${{ env.ALL_CHART_NAMES }}"
+          NEW_VERSIONS=""
+
+          echo ""
+          echo "╔══════════════════════════════════════════════════════════╗"
+          echo "║           HELM CHART UPDATES                            ║"
+          echo "╚══════════════════════════════════════════════════════════╝"
+          echo ""
+
+          for i in "${!CHART_PATHS[@]}"; do
+            CURRENT_CHART_PATH="${CHART_PATHS[$i]}"
+            CURRENT_CHART_NAME="${CHART_NAMES[$i]}"
+
+            echo "┌──────────────────────────────────────────────────────────"
+            echo "│ Chart: ${CURRENT_CHART_NAME}"
+            echo "│ Path:  ${CURRENT_CHART_PATH}"
+            echo "├──────────────────────────────────────────────────────────"
+
+            # Validate chart path exists
+            if [ ! -d "helm-charts-repo/${CURRENT_CHART_PATH}" ]; then
+              echo "│ ❌ ERROR: Chart path '${CURRENT_CHART_PATH}' not found in helm-charts repository"
+              echo "└──────────────────────────────────────────────────────────"
+              exit 1
+            fi
+
+            VALUES_FILE="helm-charts-repo/${CURRENT_CHART_PATH}/values.yaml"
+            CHART_FILE="helm-charts-repo/${CURRENT_CHART_PATH}/Chart.yaml"
+
+            # Update image tags - detect which fields exist and update accordingly
+            if [ "$(yq '.image.tag' "$VALUES_FILE")" != "null" ]; then
+              yq -i ".image.tag = \"${{ env.TAG }}\"" "$VALUES_FILE"
+              echo "│ ✓ values.yaml .image.tag = ${{ env.TAG }}"
+            fi
+
+            if [ "$(yq '.nginxContainer.image.tag' "$VALUES_FILE")" != "null" ]; then
+              yq -i ".nginxContainer.image.tag = \"${{ env.TAG }}-nginx\"" "$VALUES_FILE"
+              echo "│ ✓ values.yaml .nginxContainer.image.tag = ${{ env.TAG }}-nginx"
+            fi
+
+            if [ "$(yq '.scheduleJob.image.tag' "$VALUES_FILE")" != "null" ]; then
+              yq -i ".scheduleJob.image.tag = \"${{ env.TAG }}\"" "$VALUES_FILE"
+              echo "│ ✓ values.yaml .scheduleJob.image.tag = ${{ env.TAG }}"
+            fi
+
+            # Update Chart.yaml appVersion and bump patch version
+            yq -i ".appVersion = \"${{ env.TAG }}\"" "$CHART_FILE"
+
+            CURRENT_VERSION=$(yq '.version' "$CHART_FILE")
+            VERSION_NO_V=${CURRENT_VERSION#v}
+            MAJOR=$(echo "$VERSION_NO_V" | cut -d. -f1)
+            MINOR=$(echo "$VERSION_NO_V" | cut -d. -f2)
+            PATCH=$(echo "$VERSION_NO_V" | cut -d. -f3)
+            NEW_PATCH=$((PATCH + 1))
+            NEW_VERSION="v${MAJOR}.${MINOR}.${NEW_PATCH}"
+            yq -i ".version = \"${NEW_VERSION}\"" "$CHART_FILE"
+
+            echo "│ ✓ Chart.yaml appVersion = ${{ env.TAG }}"
+            echo "│ ✓ Chart.yaml version: ${CURRENT_VERSION} → ${NEW_VERSION}"
+            echo "└──────────────────────────────────────────────────────────"
+            echo ""
+
+            # Collect new versions for manifests update
+            if [ -z "$NEW_VERSIONS" ]; then
+              NEW_VERSIONS="${NEW_VERSION}"
+            else
+              NEW_VERSIONS="${NEW_VERSIONS},${NEW_VERSION}"
+            fi
+          done
+
+          echo "ALL_NEW_VERSIONS=${NEW_VERSIONS}" >> $GITHUB_ENV
+
+      - name: Commit and push helm-charts changes
+        run: |
+          cd helm-charts-repo
+          git add .
+          git commit -m "chore: update ${{ env.REPO_NAME }} to ${{ env.TAG }}"
+          git push origin main
+
+      - name: Clone k8s-manifests repository
+        run: |
+          git clone https://${{ secrets.PAT_TOKEN }}@github.com/${{ env.ORG }}/${{ env.MANIFESTS_REPO }}.git manifests-repo
+          cd manifests-repo
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Update ArgoCD Application manifests
+        run: |
+          IFS=',' read -ra CHART_NAMES <<< "${{ env.ALL_CHART_NAMES }}"
+          IFS=',' read -ra NEW_VERSIONS <<< "${{ env.ALL_NEW_VERSIONS }}"
+
+          echo ""
+          echo "╔══════════════════════════════════════════════════════════╗"
+          echo "║           MANIFEST UPDATES                              ║"
+          echo "╚══════════════════════════════════════════════════════════╝"
+          echo ""
+
+          for i in "${!CHART_NAMES[@]}"; do
+            CURRENT_CHART_NAME="${CHART_NAMES[$i]}"
+            CURRENT_NEW_VERSION="${NEW_VERSIONS[$i]}"
+
+            echo "┌──────────────────────────────────────────────────────────"
+            echo "│ Chart: ${CURRENT_CHART_NAME}"
+            echo "│ Target Version: ${CURRENT_NEW_VERSION}"
+            echo "├──────────────────────────────────────────────────────────"
+
+            # Find ALL manifest files referencing this chart (includes -queue variants)
+            # Use exact match with word boundary to avoid substring matches
+            # e.g., "monfi-monfi-portal" should not match "monfi-monfi-portal-job"
+            MANIFEST_FILES=$(grep -Prl "chart: ${CURRENT_CHART_NAME}(\s*$)" manifests-repo/ || true)
+            # Exclude files where chart name is a prefix of a longer name (e.g., portal vs portal-job)
+            FILTERED_FILES=""
+            while IFS= read -r FILE; do
+              [ -z "$FILE" ] && continue
+              CHART_VALUE=$(yq '.spec.source.chart' "$FILE")
+              if [ "$CHART_VALUE" = "${CURRENT_CHART_NAME}" ]; then
+                if [ -z "$FILTERED_FILES" ]; then
+                  FILTERED_FILES="$FILE"
+                else
+                  FILTERED_FILES="${FILTERED_FILES}"$'\n'"$FILE"
+                fi
+              fi
+            done <<< "$MANIFEST_FILES"
+            MANIFEST_FILES="$FILTERED_FILES"
+            if [ -z "$MANIFEST_FILES" ]; then
+              echo "│ ❌ ERROR: No manifests file found with chart '${CURRENT_CHART_NAME}'"
+              echo "└──────────────────────────────────────────────────────────"
+              exit 1
+            fi
+
+            COUNT=0
+            while IFS= read -r MANIFEST_FILE; do
+              OLD_VERSION=$(yq '.spec.source.targetRevision' "$MANIFEST_FILE")
+              yq -i ".spec.source.targetRevision = \"${CURRENT_NEW_VERSION}\"" "$MANIFEST_FILE"
+              echo "│ ✓ ${MANIFEST_FILE##*/} (targetRevision: ${OLD_VERSION} → ${CURRENT_NEW_VERSION})"
+              COUNT=$((COUNT + 1))
+            done <<< "$MANIFEST_FILES"
+
+            echo "│"
+            echo "│ Total manifests updated: ${COUNT}"
+            echo "└──────────────────────────────────────────────────────────"
+            echo ""
+          done
+
+          # Store the primary chart version for commit message
+          echo "NEW_CHART_VERSION=${NEW_VERSIONS[0]}" >> $GITHUB_ENV
+
+      - name: Commit and push manifests changes
+        run: |
+          cd manifests-repo
+          git add .
+          git commit -m "chore: update ${{ env.REPO_NAME }} to ${{ env.TAG }} (chart ${{ env.NEW_CHART_VERSION }})"
+          git push origin main

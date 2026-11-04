@@ -1,0 +1,111 @@
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        table tbody tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        table {
+            border-collapse: collapse;
+            margin: 0 auto;
+        }
+
+        .theader-title {
+            font-size: 22px;
+        }
+
+        .theader-content {
+            background-color: rgb(45, 65, 84);
+            color: white;
+        }
+
+        th {
+            padding: 8px;
+            text-align: center;
+        }
+
+        td {
+            padding: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <table>
+        <thead>
+            <tr>
+                <th class="theader-title" colspan={{ $currencies->count() + 2 }} align="center"> Client Wise Report -
+                    Reports Management - {{ $ownCompany ? $ownCompany->short_name : '' }}
+                </th>
+            </tr>
+            <br>
+            <br>
+            <tr class="theader-content">
+                <th>S.NO</th>
+                <th>Client</th>
+                @if ($currencies->count() > 0)
+                    @foreach ($currencies as $currency)
+                        <th>{{ $currency->short }}</th>
+                    @endforeach
+                @endif
+            </tr>
+        </thead>
+        <tbody>
+            @if ($users && $users->count() > 0)
+                @php
+                    $counter = 1;
+                    $balance = 0;
+                    $total = [];
+                    $hideTotal = $clients->count() === 1;
+                @endphp
+                @foreach ($clients as $client)
+                    <tr>
+                        <td align="center">{{ $counter++ }}</td>
+                        <td>{{ $client->name }}</td>
+                        @if ($currencies->count() > 0)
+                            @foreach ($currencies as $currency)
+                                @php
+                                    $balance = \App\Helpers\Common::getClientBalanceByCurrencyId($client->id, $currency->id);
+                                    $total[$currency->id] = isset($total[$currency->id]) ? $total[$currency->id] + $balance : $balance;
+                                @endphp
+                                <th>
+                                    {{ \App\Helpers\Common::formatNumber($balance, $currency->is_crypto) }}
+                                </th>
+                            @endforeach
+                        @endif
+                    </tr>
+                @endforeach
+                @if (!$hideTotal)
+                    <tr>
+                        <th></th>
+                        <td><strong>Total</strong></td>
+                        @if ($currencies->count() > 0)
+                            @foreach ($currencies as $currency)
+                                <td align="center">
+                                    <b>{{ \App\Helpers\Common::formatNumber($total[$currency->id], $currency->is_crypto) }}</b>
+                                </td>
+                            @endforeach
+                        @endif
+                    </tr>
+                @endif
+            @else
+                <tr>
+                    <td colspan="8" align="center">No records found.</td>
+                </tr>
+            @endif
+        </tbody>
+    </table>
+
+</body>
+
+</html>

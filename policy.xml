@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<policymap>
+    <policy domain="coder" rights="read|write" pattern="PDF" />
+    <policy domain="resource" name="temporary-path" value="/var/www/html/storage/app/public"/>
+</policymap>

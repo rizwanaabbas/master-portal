@@ -1,0 +1,178 @@
+/* Sweep rule detail — flow diagram */
+
+.sweep-rule-flow-wrap {
+    background: linear-gradient(135deg, #f8fbff 0%, #ffffff 45%, #fafbff 100%);
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.25rem 1.35rem 1.35rem;
+}
+
+.sweep-rule-flow-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+}
+
+.sweep-rule-flow-badges .badge {
+    margin-left: .25rem;
+}
+
+.sweep-rule-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: .65rem;
+}
+
+.sweep-rule-stat {
+    border-radius: 10px;
+    padding: .65rem .75rem;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    min-height: 100%;
+}
+
+.sweep-rule-stat-label {
+    font-size: .68rem;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: #64748b;
+    margin-bottom: .2rem;
+}
+
+.sweep-rule-stat-value {
+    font-weight: 600;
+    color: #0f172a;
+    font-size: .82rem;
+    line-height: 1.35;
+    word-break: break-word;
+}
+
+.sweep-rule-stat.tone-green { border-color: #bbf7d0; background: #f0fdf4; }
+.sweep-rule-stat.tone-blue { border-color: #bfdbfe; background: #eff6ff; }
+.sweep-rule-stat.tone-amber { border-color: #fde68a; background: #fffbeb; }
+.sweep-rule-stat.tone-purple { border-color: #ddd6fe; background: #f5f3ff; }
+
+.sweep-rule-lanes {
+    display: flex;
+    align-items: stretch;
+    gap: .5rem;
+    overflow-x: auto;
+    padding-bottom: .25rem;
+}
+
+.sweep-rule-lane {
+    flex: 1 1 170px;
+    min-width: 170px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+}
+
+.sweep-rule-lane-head {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    padding: .65rem .75rem;
+    border-bottom: 1px solid #eef2f6;
+    font-weight: 700;
+    font-size: .78rem;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+.sweep-rule-lane-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .85rem;
+}
+
+.sweep-rule-lane-body {
+    padding: .65rem .75rem .75rem;
+    display: flex;
+    flex-direction: column;
+    gap: .55rem;
+    flex: 1;
+}
+
+.sweep-rule-lane-node {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: .55rem .65rem;
+}
+
+.sweep-rule-lane-node-label {
+    font-weight: 600;
+    font-size: .78rem;
+    color: #0f172a;
+}
+
+.sweep-rule-lane-node-detail {
+    font-size: .74rem;
+    color: #64748b;
+    line-height: 1.35;
+    margin-top: .15rem;
+}
+
+.sweep-rule-lane-badge {
+    display: inline-block;
+    margin-top: .35rem;
+    font-size: .68rem;
+    font-weight: 700;
+    padding: .12rem .45rem;
+    border-radius: 999px;
+    background: #e2e8f0;
+    color: #334155;
+}
+
+.sweep-rule-lane.tone-blue .sweep-rule-lane-head { background: #eff6ff; color: #1d4ed8; }
+.sweep-rule-lane.tone-blue .sweep-rule-lane-icon { background: #dbeafe; }
+.sweep-rule-lane.tone-green .sweep-rule-lane-head { background: #f0fdf4; color: #15803d; }
+.sweep-rule-lane.tone-green .sweep-rule-lane-icon { background: #dcfce7; }
+.sweep-rule-lane.tone-amber .sweep-rule-lane-head { background: #fffbeb; color: #b45309; }
+.sweep-rule-lane.tone-amber .sweep-rule-lane-icon { background: #fef3c7; }
+.sweep-rule-lane.tone-purple .sweep-rule-lane-head { background: #f5f3ff; color: #6d28d9; }
+.sweep-rule-lane.tone-purple .sweep-rule-lane-icon { background: #ede9fe; }
+
+.sweep-rule-lane-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+    font-size: 1.1rem;
+    min-width: 24px;
+    flex-shrink: 0;
+    align-self: center;
+}
+
+.sweep-rule-schedule-footnote {
+    font-size: .82rem;
+    color: #475569;
+    background: #f8fafc;
+    border: 1px dashed #cbd5e1;
+    border-radius: 8px;
+    padding: .65rem .85rem;
+}
+
+@media (max-width: 991.98px) {
+    .sweep-rule-lane-arrow {
+        display: none;
+    }
+
+    .sweep-rule-lanes {
+        flex-direction: column;
+    }
+
+    .sweep-rule-lane {
+        min-width: 0;
+    }
+}

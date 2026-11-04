@@ -1,0 +1,27 @@
+version: "3.7"
+services:
+  app:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    image: faib-portal
+    container_name: faib
+    restart: unless-stopped
+    networks:
+      - faib
+  nginx:
+    build:
+      context: ./
+      dockerfile: Dockerfile.nginx
+    image: faib-nginx
+    container_name: nginx
+    restart: unless-stopped
+    ports:
+      - 127.0.0.1:8000:80
+    volumes:
+      - ./nginx:/etc/nginx/conf.d/
+    networks:
+      - faib
+networks:
+  faib:
+    driver: bridge

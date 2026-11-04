@@ -1,0 +1,238 @@
+@extends('layouts.cp')
+@section('title', 'Transactions List - Finance Management')
+
+@section('content')
+
+    <div class="subheader">
+        <h1 class="subheader-title">
+            <span class='fw-300'>Finance Management</span>
+        </h1>
+        <div class="d-flex">
+            @can('add transaction')
+                <a href="{{ url('/finance-management/transactions/new/cheque') }}" class="btn btn-primary btn-shape ml-2"><i
+                        class="fal fa-plus-circle"></i> Cheque </a>
+                <a href="{{ url('/finance-management/transactions/new/tt') }}" class="btn btn-primary btn-shape ml-2"><i
+                        class="fal fa-plus-circle"></i> TT </a>
+                <a href="{{ url('/finance-management/transactions/new/internal') }}" class="btn btn-primary btn-shape ml-2"><i
+                        class="fal fa-plus-circle"></i> Internal Transfer </a>
+            @endcan
+        </div>
+    </div>
+    @can('transaction list grid')
+        <div class="panel" data-panel-lock="false" data-panel-close="false" data-panel-collapsed="false"
+            data-panel-color="false" data-panel-locked="false" data-panel-refresh="false" data-panel-reset="false">
+            <div class="panel-hdr">
+                <h2>
+                    Transactions List
+                </h2>
+
+            </div>
+
+            <div class="panel-container show mb-3">
+                <div class="panel-content" style="overflow: scroll;">
+                    @include('common.error-message')
+                    <table class="table table-bordered table-hover m-0 shadow" id="data-grid">
+                        <thead class="thead-themed">
+                            <tr>
+                                <th width="30"></th>
+                                <th>Account Title</th>
+                                <th>Mode</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                                <th>Method</th>
+                                <th>Date</th>
+                                <th>Creator</th>
+                                <th>Reviewer</th>
+                                <th>Approver</th>
+                                {{-- <th>Service Fee</th>
+                            <th>Transaction Fee</th> --}}
+                                <th>Fee</th>
+                                <th>Status</th>
+                                @can('delete records')
+                                    <th width="30" align="center"></th>
+                                @endcan
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if ($transactions)
+                                @foreach ($transactions as $transaction)
+                                    <tr>
+                                        <td align="center" scope="row">
+                                            @can('edit bank')
+                                                <a
+                                                    href="{{ url('/finance-management/transactions/edit/' . strtolower($transaction->transaction_nature) . '/' . ($transaction->parent_trn_id ? $transaction->parent_trn_id : $transaction->id)) }}"><i
+                                                        class="fal fa-edit"></i></a>
+                                            @endcan
+                                        </td>
+                                        <td>
+                                            {{ $transaction->account_title }}
+                                            <br /><small>{{ $transaction->account_number . ' - (Request ID: ' . $transaction->tr_request_id . ')' }}</small>
+                                        </td>
+                                        <td>
+                                            {{ $transaction->transaction_nature . ($transaction->is_exchange ? ' - Exchange' : '') }}
+                                        </td>
+                                        <td>{{ $transaction->transaction_type }}</td>
+                                        <td>{{ number_format($transaction->amount, 2) }}</td>
+                                        <td>{{ $transaction->method }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($transaction->transaction_date)->format('d/m/Y') }}</td>
+                                        <td>{{ $transaction->creator }}</td>
+                                        <td>{{ $transaction->reviewer }}</td>
+                                        <td>{{ $transaction->approver ?? 'Automated Approval' }}</td>
+                                        <td>
+                                            <span class="badge {{ $statusBadge[$transaction->is_fee_transaction] }}">
+                                                {{ $transaction->is_fee_transaction ? 'Yes' : 'No' }}
+                                            </span>
+                                        </td>
+                                        {{-- <td>
+                                        <span class="badge {{ $statusBadge[$transaction->is_trn_fee] }}">
+                                            {{ $transaction->is_trn_fee ? 'Yes' : 'No' }}
+                                        </span>
+                                    </td> --}}
+                                        <td>
+                                            <span class="badge {{ $statusBadge[$transaction->status] }}">
+                                                {{ $transaction->status }}
+                                            </span>
+                                        </td>
+                                        @can('delete records')
+                                            <td>
+                                                <a
+                                                    href="javascript:deleteTransaction({{ $transaction->parent_trn_id ? $transaction->parent_trn_id : $transaction->id }})"><i
+                                                        class="alert-danger fal fa-times-circle rounded-circle"></i></a>
+                                            </td>
+                                        @endcan
+                                    </tr>
+                                @endforeach
+                            @else
+                                <tr>
+                                    <td colspan="5">No records found</td>
+                                </tr>
+                            @endif
+                        </tbody>
+                    </table>
+                    @if (strpos(Request::route()->uri, 'finance-management/transactions/search') !== false)
+                        {{ $transactions->links('global-partials.pagination-post-req', [
+                            'perPage' => $transactions->perPage(),
+                            'currentPage' => $transactions->currentPage(),
+                            'total' => $transactions->total(),
+                            'hiddenInputs' => [
+                                'per_page' => $request['per_page'],
+                                'search_string' => $request['search_string'],
+                            ],
+                        ]) }}
+                    @else
+                        {{ $transactions->links('global-partials.pagination', [
+                            'perPage' => $transactions->perPage(),
+                            'currentPage' => $transactions->currentPage(),
+                            'total' => $transactions->total(),
+                        ]) }}
+                    @endif
+                </div>
+            </div>
+        </div>
+    @endcan
+    <form method="POST" name="delete-transaction" id="delete-transaction"
+        action="{{ url('/finance-management/transactions/delete') }}">
+        @csrf
+        <input type="hidden" name="trn_id" id="trn_id" value="">
+    </form>
+
+    @php
+        $search_string = isset($request) && isset($request['search_string']) ? $request['search_string'] : null;
+    @endphp
+
+    <form name="search" id="search" method="post" action="{{ url('/finance-management/transactions/search') }}"
+        enctype="multipart/form-data">
+        @csrf
+        <input type="hidden" name="per_page" id="per_page"
+            value="{{ isset($request->per_page) ? $request->per_page : '' }}">
+        <input type="hidden" name="search_string" id="search_string"
+            value="{{ isset($request->search_string) ? $request->search_string : '' }}" />
+    </form>
+
+@stop
+@section('scripts')
+    <script>
+        var hiddenInput = document.getElementById('search_string')
+        var search_string = "<?php echo $search_string; ?>"
+        var perPage = "<?php echo $request['per_page']; ?>"
+        var recordsCount = "<?php echo count($transactions->items()); ?>"
+
+        perPage = perPage ? perPage : 10
+        document.getElementById('per_page').value = perPage
+
+        $(document).ready(function() {
+            $('#data-grid').DataTable({
+                responsive: true,
+                // serverSide: true,
+                dom: "<'row mb-3'<'col-sm-12 col-md-6 d-flex align-items-center justify-content-start'f><'col-sm-12 col-md-6 d-flex justify-content-end'l>>" +
+                    "<'row'<'col-sm-12'tr>>"
+            });
+
+            const pageLength = document.getElementsByName('data-grid_length')[0]
+            const searchInput = document.querySelectorAll('input[type="search"]')[0]
+
+            if (pageLength) {
+                const options = Array.from(pageLength.options)
+                let optionToSelect = options.find(item => item.value == perPage)
+                optionToSelect.setAttribute('selected', true)
+
+                if (perPage == -1) {
+                    perPage = recordsCount
+                }
+
+                $('#data-grid').DataTable().page.len(perPage).draw();
+
+                pageLength.addEventListener('change', function() {
+                    document.getElementById('per_page').value = pageLength.value
+                    document.getElementById('search').submit()
+                })
+            }
+
+            // Search using debounce mechanism starts
+            if (search_string && searchInput) {
+                searchInput.value = search_string
+
+            }
+
+            if (searchInput) {
+                searchInput.addEventListener('input', e => {
+                    hiddenInput.value = e.target.value
+                    updateDebounceText(e.target.value)
+                })
+            }
+            // Search using debounce mechanism ends
+        });
+
+        const updateDebounceText = debounce(searchString => {
+            hiddenInput.value = searchString
+            document.getElementById('search').submit();
+        })
+
+        function debounce(callback, delay = 1000) {
+            let timeout
+
+            return (...args) => {
+                clearTimeout(timeout)
+                timeout = setTimeout(() => {
+                    callback(...args)
+                }, delay)
+            }
+        }
+
+        function deleteTransaction(id) {
+
+            Swal.fire({
+                title: "Are you sure?",
+                text: "Transaction, along with linked transactions, will be deleted permanently.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Yes, delete it!"
+            }).then(function(result) {
+                if (result.value) {
+                    $("#trn_id").val(id);
+                    document.getElementById('delete-transaction').submit()
+                }
+            });
+        }
+    </script>
+@stop

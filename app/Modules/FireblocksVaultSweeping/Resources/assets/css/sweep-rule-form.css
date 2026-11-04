@@ -1,0 +1,235 @@
+/* Sweep rule create / edit form */
+
+.sweep-page-intro {
+    background: linear-gradient(135deg, #f0f7ff 0%, #f8fbff 55%, #ffffff 100%);
+    border: 1px solid #dbeafe;
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+}
+
+.sweep-flow-track {
+    display: flex;
+    align-items: stretch;
+    gap: .75rem;
+    flex-wrap: wrap;
+}
+
+.sweep-flow-node {
+    flex: 1 1 180px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 1rem;
+    background: #fff;
+    position: relative;
+}
+
+.sweep-flow-node.highlight {
+    border-color: #93c5fd;
+    background: #f8fbff;
+}
+
+.sweep-flow-node .node-title {
+    font-size: .72rem;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: #64748b;
+    margin-bottom: .35rem;
+}
+
+.sweep-flow-node .node-value {
+    font-weight: 600;
+    color: #0f172a;
+    font-size: .95rem;
+}
+
+.sweep-flow-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+    font-size: 1.35rem;
+    min-width: 28px;
+    flex-shrink: 0;
+}
+
+.sweep-asset-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    font-size: .75rem;
+    padding: .2rem .55rem;
+    border-radius: 999px;
+    background: #f1f5f9;
+    color: #475569;
+    margin-top: .45rem;
+    margin-right: .35rem;
+}
+
+.sweep-asset-badge.gas {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.sweep-asset-badge.network {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.sweep-trigger-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 1rem;
+    height: 100%;
+    background: #fff;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.sweep-trigger-card.active {
+    border-color: #86efac;
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, .12);
+    background: #fafffb;
+}
+
+.sweep-trigger-card .trigger-head {
+    display: flex;
+    align-items: flex-start;
+    gap: .65rem;
+    margin-bottom: .85rem;
+}
+
+.sweep-trigger-card .trigger-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #f1f5f9;
+    color: #475569;
+    flex-shrink: 0;
+}
+
+.sweep-trigger-card.active .trigger-icon {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.sweep-steps {
+    counter-reset: sweep-step;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sweep-steps li {
+    counter-increment: sweep-step;
+    display: flex;
+    gap: .75rem;
+    padding: .55rem 0;
+    border-bottom: 1px dashed #e8edf3;
+    color: #475569;
+    font-size: .92rem;
+}
+
+.sweep-steps li:last-child {
+    border-bottom: 0;
+}
+
+.sweep-steps li::before {
+    content: counter(sweep-step);
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #e0f2fe;
+    color: #0369a1;
+    font-size: .75rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.sweep-form-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    background: #fafbfc;
+    border-top: 1px solid #eef2f6;
+    border-radius: 0 0 10px 10px;
+    margin: 0 -1.25rem -1.25rem;
+}
+
+.sweep-form-footer-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    margin-left: auto;
+}
+
+.sweep-gas-fees-stack > .border.rounded {
+    margin-bottom: 1rem;
+}
+
+.sweep-gas-fees-stack > .border.rounded:last-child {
+    margin-bottom: 0;
+}
+
+@media (max-width: 767.98px) {
+    .sweep-form-footer-actions {
+        width: 100%;
+        margin-left: 0;
+        justify-content: flex-end;
+    }
+}
+
+.sweep-field-label {
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: .4rem;
+}
+
+.sweep-field-label .sweep-field-help-btn {
+    color: #0ea5e9;
+    padding: 0 .15rem;
+    line-height: 1;
+}
+
+.sweep-gas-banner {
+    border-radius: 8px;
+    padding: .85rem 1rem;
+    display: flex;
+    align-items: flex-start;
+    gap: .75rem;
+}
+
+.sweep-gas-banner.warning {
+    background: #fffbeb;
+    border: 1px solid #fcd34d;
+    color: #92400e;
+}
+
+.sweep-gas-banner.info {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    color: #1e40af;
+}
+
+.sweep-gas-banner .banner-icon {
+    font-size: 1.2rem;
+    margin-top: .1rem;
+}
+
+@media (max-width: 767px) {
+    .sweep-flow-arrow {
+        transform: rotate(90deg);
+        width: 100%;
+        min-height: 24px;
+    }
+}
