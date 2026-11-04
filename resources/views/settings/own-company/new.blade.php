@@ -113,9 +113,9 @@
                             <div class="form-group">
                                 <label class="form-label" for="login_page_image">Login Page Image</label><br />
                                 <label for="login_page_image" class="btn btn-light">Upload Login Page Image</label>
-                                <span id="file-name-display-login_page_image"> choose gif, recommended size
+                                <span id="file-name-display-login_page_image"> choose jpg/png/gif/webp/svg, recommended size
                                     527x684</span>
-                                <input type="file" name="login_page_image" accept="image/*" onchange="setFile(this)"
+                                <input type="file" name="login_page_image" accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml,.jpg,.jpeg,.png,.gif,.webp,.svg" onchange="setFile(this)"
                                     id="login_page_image" class="invisible item-file" />
                             </div>
 

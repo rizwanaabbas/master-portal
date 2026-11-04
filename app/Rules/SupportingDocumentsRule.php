@@ -66,6 +66,10 @@ class SupportingDocumentsRule implements Rule
 
     private function validateFile($file)
     {
+        if (!$file || !is_object($file) || !method_exists($file, 'getError')) {
+            return true;
+        }
+
         if ($file->getError()) {
             switch ($file->getError()) {
                 case UPLOAD_ERR_INI_SIZE:
@@ -136,21 +140,41 @@ class SupportingDocumentsRule implements Rule
         $hasError = false;
 
         switch ($mime) {
+            case 'image/svg+xml':
+            case 'image/svg':
+                // SVG is XML — getimagesize() often fails even for valid files.
+                $contents = (string) file_get_contents($file->getPathname());
+                if ($contents === '' || stripos($contents, '<svg') === false) {
+                    $this->errorMessage = 'Something went wrong, please try again later.';
+                    $this->statusCode = 500;
+                    Log::error('Invalid SVG file. Line: ' . __LINE__ . ' File: ' . $file->getClientOriginalName());
+
+                    if ($this->throwError) {
+                        throw new Exception($this->errorMessage, $this->statusCode);
+                    }
+
+                    return false;
+                }
+
+                return true;
+
             case 'image/bmp':
             case 'image/jpg':
             case 'image/jpeg':
             case 'image/png':
             case 'image/gif':
             case 'image/webp':
-            case 'image/svg+xml':
-                // Validate image structure
+                // Validate raster image structure
                 if (@getimagesize($file->getPathname()) === false) {
-                    $hasError = true;
-
                     $this->errorMessage = 'Something went wrong, please try again later.';
                     $this->statusCode = 500;
-
                     Log::error('Invalid image file structure. Line: ' . __LINE__ . ' File: ' . $file->getClientOriginalName());
+
+                    if ($this->throwError) {
+                        throw new Exception($this->errorMessage, $this->statusCode);
+                    }
+
+                    return false;
                 }
 
                 return true;

@@ -5,9 +5,13 @@ namespace App\Helpers;
 class FileFirewall
 {
 
-    public static function isAllowedType($file)
+    /**
+     * @param  mixed  $file
+     * @param  bool  $allowSvg  When true, skip Security ban_svg_uploads for this file (e.g. Own Company login page image).
+     */
+    public static function isAllowedType($file, bool $allowSvg = false)
     {
-        $allowed_ext = ["pdf", "doc", "docx", "csv", "rft", "txt", "ppt", "pptx", "xls", "xlsx", "jpg", "jpeg", "png", "bmp", "gif", "svg"];
+        $allowed_ext = ["pdf", "doc", "docx", "csv", "rft", "txt", "ppt", "pptx", "xls", "xlsx", "jpg", "jpeg", "png", "bmp", "gif", "webp", "svg"];
         $allowed_mimes = [
             "application/pdf",
             "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
@@ -28,6 +32,7 @@ class FileFirewall
             "image/jpg",
             "image/gif",
             "image/png",
+            "image/webp",
             "image/bmp",
             "image/svg",
             "image/svg+xml"
@@ -61,7 +66,7 @@ class FileFirewall
             return false;
         }
 
-        if (\App\Modules\Security\Services\SecurityConfigService::banSvgUploads()) {
+        if (!$allowSvg && \App\Modules\Security\Services\SecurityConfigService::banSvgUploads()) {
             $ext = strtolower($file->getClientOriginalExtension());
             $mime = strtolower($realMime ?: $declaredMime);
             if ($ext === 'svg' || in_array($mime, ['image/svg', 'image/svg+xml'], true)) {

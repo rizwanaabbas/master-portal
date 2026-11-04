@@ -55,7 +55,7 @@ class OwnCompanyController extends Controller
             'favicon' => [new SupportingDocumentsRule, 'mimes:png,svg'],
             'stamp' => [new SupportingDocumentsRule, 'mimes:jpeg,jpg,png,webp,svg'],
             'watermark' => [new SupportingDocumentsRule, 'mimes:jpeg,jpg,png,webp,svg'],
-            'login_page_image' => [new SupportingDocumentsRule, 'mimes:jpeg,jpg,png,webp,svg,gif'],
+            'login_page_image' => [new SupportingDocumentsRule, 'nullable', 'mimes:jpeg,jpg,png,webp,gif,svg'],
             'theme' => 'nullable|string',
             'card_colors' => 'nullable|json',
             'chart_color' => 'nullable|string'
@@ -156,12 +156,16 @@ class OwnCompanyController extends Controller
 
         if ($request->hasFile('login_page_image')) {
 
-            // validate file
-            if (!FileFirewall::isAllowedType($request->file('login_page_image'))) {
+            // Login page image may be SVG even when Security ban_svg_uploads is on.
+            if (!FileFirewall::isAllowedType($request->file('login_page_image'), true)) {
                 return FileFirewall::logBadFileException($request->file('login_page_image'));
             }
 
-            $company->login_page_image = S3Helper::fileUpload($request->file('login_page_image'), 'company-login_page_image');
+            $uploadedLoginImage = S3Helper::fileUpload($request->file('login_page_image'), 'company-login_page_image');
+            if (!$uploadedLoginImage) {
+                return redirect()->back()->withInput()->with('error', 'Login page image upload failed. Please try again.');
+            }
+            $company->login_page_image = $uploadedLoginImage;
         }
 
         $company->save();
@@ -212,7 +216,7 @@ class OwnCompanyController extends Controller
             'favicon' => [new SupportingDocumentsRule, 'mimes:png,svg'],
             'stamp' => [new SupportingDocumentsRule, 'mimes:jpeg,jpg,png,webp,svg'],
             'watermark' => [new SupportingDocumentsRule, 'mimes:jpeg,jpg,png,webp,svg'],
-            'login_page_image' => [new SupportingDocumentsRule, 'mimes:jpeg,jpg,png,webp,svg,gif'],
+            'login_page_image' => [new SupportingDocumentsRule, 'nullable', 'mimes:jpeg,jpg,png,webp,gif,svg'],
             'theme' => 'nullable|string',
             'card_colors' => 'nullable|json',
             'chart_color' => 'nullable|string'
@@ -344,16 +348,21 @@ class OwnCompanyController extends Controller
 
             if ($request->hasFile('login_page_image')) {
 
-                // validate file
-                if (!FileFirewall::isAllowedType($request->file('login_page_image'))) {
+                // Login page image may be SVG even when Security ban_svg_uploads is on.
+                if (!FileFirewall::isAllowedType($request->file('login_page_image'), true)) {
                     return FileFirewall::logBadFileException($request->file('login_page_image'));
+                }
+
+                $uploadedLoginImage = S3Helper::fileUpload($request->file('login_page_image'), 'company-login_page_image');
+                if (!$uploadedLoginImage) {
+                    return redirect()->back()->withInput()->with('error', 'Login page image upload failed. Please try again.');
                 }
 
                 if ($company->login_page_image) {
                     S3Helper::fileDelete($company->login_page_image);
                 }
 
-                $company->login_page_image = S3Helper::fileUpload($request->file('login_page_image'), 'company-login_page_image');
+                $company->login_page_image = $uploadedLoginImage;
             }
 
             $company->save();
