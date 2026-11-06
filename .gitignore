@@ -7,6 +7,7 @@
 /storage/*.key
 /storage/debugbar/
 /vendor
+/storage
 deploy.sh
 migrate_remote.sh
 lms_ctx.sh
@@ -28,7 +29,8 @@ bootstrap/cache/
 /public/tmp
 /tmp
 **/.DS_Store
-/resources/views/pdfs/on-boarding
+# Onboarding PDF blades are shared + Own Company–configurable — must be tracked.
+# (Previously ignored when bank forks lived only locally.)
 Dockerfile_backup
 
 # Ignore database/ip2location
@@ -52,8 +54,6 @@ temp_interactive_push.bat
 config.bat
 
 # Never commit env / bank secrets (brought from cib-portal)
-.env
-.env.*
 !.env.example
 
 # Bank-specific Firebase service accounts (path set per deploy)
